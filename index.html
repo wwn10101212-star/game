@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Snake Game Ica 🐍</title>
+<style>
+  body {
+    background: linear-gradient(135deg, #11998e, #38ef7d);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: Arial;
+    color: white;
+  }
+
+  h1 {
+    margin-top: 20px;
+  }
+
+  #score {
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+
+  canvas {
+    background: #111;
+    border: 5px solid white;
+    border-radius: 10px;
+  }
+</style>
+</head>
+<body>
+
+<h1>🐍 Snake Game</h1>
+<div id="score">Score: 0</div>
+<canvas id="gameCanvas" width="400" height="400"></canvas>
+
+<script>
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+
+let box = 20;
+let snake = [{x: 200, y: 200}];
+let direction = "RIGHT";
+let food = randomFood();
+let score = 0;
+
+// kontrol keyboard
+document.addEventListener("keydown", changeDirection);
+
+function changeDirection(event) {
+  if (event.key === "ArrowUp" && direction !== "DOWN") direction = "UP";
+  else if (event.key === "ArrowDown" && direction !== "UP") direction = "DOWN";
+  else if (event.key === "ArrowLeft" && direction !== "RIGHT") direction = "LEFT";
+  else if (event.key === "ArrowRight" && direction !== "LEFT") direction = "RIGHT";
+}
+
+function randomFood() {
+  return {
+    x: Math.floor(Math.random() * 20) * box,
+    y: Math.floor(Math.random() * 20) * box
+  };
+}
+
+function draw() {
+  ctx.fillStyle = "#111";
+  ctx.fillRect(0, 0, 400, 400);
+
+  // gambar ular
+  for (let i = 0; i < snake.length; i++) {
+    ctx.fillStyle = i === 0 ? "#00ffcc" : "#00cc99";
+    ctx.fillRect(snake[i].x, snake[i].y, box, box);
+  }
+
+  // gambar makanan
+  ctx.fillStyle = "red";
+  ctx.fillRect(food.x, food.y, box, box);
+
+  // posisi kepala
+  let headX = snake[0].x;
+  let headY = snake[0].y;
+
+  if (direction === "UP") headY -= box;
+  if (direction === "DOWN") headY += box;
+  if (direction === "LEFT") headX -= box;
+  if (direction === "RIGHT") headX += box;
+
+  // makan makanan
+  if (headX === food.x && headY === food.y) {
+    score++;
+    document.getElementById("score").innerText = "Score: " + score;
+    food = randomFood();
+  } else {
+    snake.pop();
+  }
+
+  let newHead = {x: headX, y: headY};
+
+  // tabrakan
+  if (
+    headX < 0 || headY < 0 ||
+    headX >= 400 || headY >= 400 ||
+    collision(newHead, snake)
+  ) {
+    alert("Game Over 😢");
+    location.reload();
+  }
+
+  snake.unshift(newHead);
+}
+
+function collision(head, body) {
+  for (let i = 0; i < body.length; i++) {
+    if (head.x === body[i].x && head.y === body[i].y) {
+      return true;
+    }
+  }
+  return false;
+}
+
+setInterval(draw, 120);
+</script>
+
+</body>
+</html>
