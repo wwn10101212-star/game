@@ -32,6 +32,7 @@ canvas {
   background: #000;
   border: 4px solid white;
   border-radius: 10px;
+  touch-action: none; /* penting untuk HP */
 }
 
 /* tombol kontrol */
@@ -128,13 +129,11 @@ function draw() {
   ctx.fillStyle = "#000";
   ctx.fillRect(0, 0, 400, 400);
 
-  // ular
   for (let i = 0; i < snake.length; i++) {
     ctx.fillStyle = i === 0 ? "#00ffcc" : "#00cc99";
     ctx.fillRect(snake[i].x, snake[i].y, box, box);
   }
 
-  // makanan
   ctx.fillStyle = "red";
   ctx.fillRect(food.x, food.y, box, box);
 
@@ -146,7 +145,6 @@ function draw() {
   if (direction === "LEFT") headX -= box;
   if (direction === "RIGHT") headX += box;
 
-  // makan
   if (headX === food.x && headY === food.y) {
     score++;
     document.getElementById("score").innerText = "Score: " + score;
@@ -157,7 +155,6 @@ function draw() {
 
   let newHead = {x: headX, y: headY};
 
-  // tabrakan
   if (
     headX < 0 || headY < 0 ||
     headX >= 400 || headY >= 400 ||
@@ -189,30 +186,33 @@ function gameOver() {
   alert("Game Over 😢\nScore: " + score);
 }
 
-// swipe layar HP
-let touchStartX = 0;
-let touchStartY = 0;
+// SWIPE KHUSUS HP (SUDAH DIPERBAIKI)
+let startX = 0;
+let startY = 0;
 
 canvas.addEventListener("touchstart", function(e) {
-  touchStartX = e.touches[0].clientX;
-  touchStartY = e.touches[0].clientY;
-});
+  e.preventDefault();
+  startX = e.touches[0].clientX;
+  startY = e.touches[0].clientY;
+}, { passive: false });
 
 canvas.addEventListener("touchend", function(e) {
-  let touchEndX = e.changedTouches[0].clientX;
-  let touchEndY = e.changedTouches[0].clientY;
+  e.preventDefault();
 
-  let dx = touchEndX - touchStartX;
-  let dy = touchEndY - touchStartY;
+  let endX = e.changedTouches[0].clientX;
+  let endY = e.changedTouches[0].clientY;
+
+  let dx = endX - startX;
+  let dy = endY - startY;
 
   if (Math.abs(dx) > Math.abs(dy)) {
-    if (dx > 0) setDirection("RIGHT");
-    else setDirection("LEFT");
+    if (dx > 30) setDirection("RIGHT");
+    else if (dx < -30) setDirection("LEFT");
   } else {
-    if (dy > 0) setDirection("DOWN");
-    else setDirection("UP");
+    if (dy > 30) setDirection("DOWN");
+    else if (dy < -30) setDirection("UP");
   }
-});
+}, { passive: false });
 </script>
 
 </body>
