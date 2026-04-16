@@ -22,6 +22,7 @@ h1 {
 
 #score {
   font-size: 20px;
+  margin-bottom: 10px;
 }
 
 /* CANVAS */
@@ -32,24 +33,27 @@ canvas {
   touch-action: none;
 }
 
-/* TOMBOL ARAH (FIX DI BAWAH) */
+/* TOMBOL ARAH */
 .controls {
-  position: fixed;
-  bottom: 20px;
-  left: 0;
-  right: 0;
+  margin-top: 10px; /* dekat dengan game */
   text-align: center;
 }
 
 .controls button {
-  width: 65px;
-  height: 65px;
-  font-size: 26px;
-  margin: 5px;
-  border-radius: 12px;
+  width: 95px;
+  height: 95px;
+  font-size: 38px;
+  margin: 6px;
+  border-radius: 18px;
   background: #27ae60;
   color: white;
   border: none;
+}
+
+/* efek ditekan */
+.controls button:active {
+  background: #2ecc71;
+  transform: scale(0.92);
 }
 </style>
 </head>
@@ -61,7 +65,7 @@ canvas {
 
 <canvas id="gameCanvas" width="350" height="350"></canvas>
 
-<!-- TOMBOL ARAH -->
+<!-- TOMBOL ARAH BESAR -->
 <div class="controls">
   <button onclick="setDirection('UP')">⬆️</button><br>
   <button onclick="setDirection('LEFT')">⬅️</button>
@@ -79,10 +83,10 @@ let direction = "RIGHT";
 let food = randomFood();
 let score = 0;
 
-// kontrol keyboard
+// keyboard
 document.addEventListener("keydown", changeDirection);
 
-// tombol sentuh
+// tombol
 function setDirection(newDirection) {
   if (newDirection === "UP" && direction !== "DOWN") direction = "UP";
   else if (newDirection === "DOWN" && direction !== "UP") direction = "DOWN";
@@ -108,7 +112,7 @@ function draw() {
   ctx.fillStyle = "#000";
   ctx.fillRect(0, 0, 350, 350);
 
-  // gambar ular
+  // ular
   for (let i = 0; i < snake.length; i++) {
     ctx.fillStyle = i === 0 ? "#00ffcc" : "#00cc99";
     ctx.fillRect(snake[i].x, snake[i].y, box, box);
@@ -159,18 +163,17 @@ function collision(head, body) {
   return false;
 }
 
-// LOOP GAME
+// loop
 setInterval(draw, 120);
 
-
-// SWIPE (GESER LAYAR)
+// SWIPE
 let startX = 0;
 let startY = 0;
 
 canvas.addEventListener("touchstart", function(e) {
   startX = e.touches[0].clientX;
   startY = e.touches[0].clientY;
-}, { passive: true });
+});
 
 canvas.addEventListener("touchend", function(e) {
   let endX = e.changedTouches[0].clientX;
